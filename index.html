@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover"
+    />
+
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Для Лерусі" />
+    <link rel="apple-touch-icon" href="assets/icon-192.png" />
+
+    <title>Для Лерусі - Валентинка</title>
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Прелоадер -->
+    <div class="preloader" id="preloader">
+      <div class="preloader__content">
+        <div class="preloader__heart">❤️</div>
+        <div class="preloader__text">Для Лерусі</div>
+        <div class="preloader__subtext">завантаження...</div>
+      </div>
+    </div>
+
+    <!-- Головний додаток -->
+    <div class="app" id="app">
+      <!-- Нижнє меню (тільки на хроніках) -->
+      <div class="bottom-menu hidden" id="bottomMenu">
+        <button class="menu-item" data-screen="2">
+          <span class="menu-icon">⏳</span>
+          <span class="menu-label">хроніки</span>
+        </button>
+        <button class="menu-item" data-screen="3">
+          <span class="menu-icon">🎲</span>
+          <span class="menu-label">кубик історій</span>
+        </button>
+        <button class="menu-item" data-screen="4">
+          <span class="menu-icon">✨</span>
+          <span class="menu-label">зірочки</span>
+        </button>
+      </div>
+
+      <!-- ЕКРАН 1: ВХІД -->
+      <div class="screen screen--1 active" id="screen1">
+        <div class="entry">
+          <div class="entry__content">
+            <h1 class="entry__title">Леруся</h1>
+            <p class="entry__subtitle">введи пароль</p>
+
+            <div class="entry__input-group">
+              <input
+                type="text"
+                class="entry__input"
+                id="passwordInput"
+                placeholder="*****"
+                autocomplete="off"
+              />
+              <button class="entry__button" id="unlockBtn">
+                <span>відкрити</span>
+              </button>
+            </div>
+
+            <div class="entry__attempts" id="attemptsIndicator">
+              <span class="entry__dot"></span>
+              <span class="entry__dot"></span>
+              <span class="entry__dot"></span>
+            </div>
+
+            <div class="entry__hint" id="hintMessage">
+              💭 Тицяемо, не лінуємося!
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ЕКРАН 2: ХРОНІКИ (з кнопкою назад) -->
+      <div class="screen screen--2" id="screen2">
+        <div class="chronology">
+          <button class="chronology__back" onclick="app.showScreen(1)">
+            ←
+          </button>
+
+          <div class="chronology__counter">
+            <div class="chronology__main" id="mainCounter">0 роки, 0 днів</div>
+            <div class="chronology__detailed" id="detailedCounter">
+              0 міс, 0 год, 0 хв, 0 с
+            </div>
+          </div>
+
+          <div class="chronology__dates">
+            <div class="chronology__date">
+              <span class="chronology__emoji">💌</span>
+              <div class="chronology__info">
+                <div class="chronology__name">перше "привіт"</div>
+                <div class="chronology__value">19.03.2023</div>
+              </div>
+            </div>
+
+            <div class="chronology__date">
+              <span class="chronology__emoji">🎬</span>
+              <div class="chronology__info">
+                <div class="chronology__name">перший фільм</div>
+                <div class="chronology__value">27.12.2024</div>
+              </div>
+            </div>
+
+            <div class="chronology__date">
+              <span class="chronology__emoji">🎉</span>
+              <div class="chronology__info">
+                <div class="chronology__name">перший Новий рік</div>
+                <div class="chronology__value">31.12.2025</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chronology__quote" id="chronologyQuote">
+            <span class="quote-icon">💐</span>
+            <span class="quote-text" id="quoteText">Натисни на мене 😉</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ЕКРАН 3: КУБИК ІСТОРІЙ -->
+      <div class="screen screen--3" id="screen3">
+        <div class="history-cube">
+          <button class="history-cube__back" onclick="app.showScreen(2)">
+            ←
+          </button>
+
+          <h2 class="history-cube__title">кубик історій</h2>
+
+          <div class="history-cube__container" id="cubeContainer">
+            <div class="history-cube__cube" id="magicCube">
+              <div class="cube-face front">😊</div>
+              <div class="cube-face back">❤️</div>
+              <div class="cube-face right">🥰</div>
+              <div class="cube-face left">💕</div>
+              <div class="cube-face top">😘</div>
+              <div class="cube-face bottom">🥺</div>
+            </div>
+          </div>
+
+          <div class="history-cube__message" id="cubeMessage">
+            <span class="message-text">А-ну тицяй по нььому)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ЕКРАН 4: ЗІРОЧКИ -->
+      <div class="screen screen--4" id="screen4">
+        <div class="stars">
+          <button class="stars__back" onclick="app.showScreen(2)">←</button>
+
+          <div class="stars__header">
+            <h2 class="stars__title">лови зірочки</h2>
+            <div class="stars__score" id="gameScore">0 ⭐</div>
+          </div>
+
+          <div class="stars__game">
+            <canvas id="gameCanvas"></canvas>
+          </div>
+
+          <div class="stars__info">
+            <span class="stars__tip">👆 торкайся зірочок</span>
+            <span class="stars__reward-note">кожні 10 зірок → комплімент</span>
+          </div>
+
+          <div class="stars__reward" id="starReward">
+            <span id="rewardMessage"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ЕКРАН 5: СЕКРЕТНИЙ (при повороті) -->
+      <div class="screen screen--5" id="screen5">
+        <div class="secret">
+          <div class="secret__heart">❤️</div>
+          <h2 class="secret__title">кукусі</h2>
+          <p class="secret__quote">
+            "Поки всі захоплюються твоєю зовнішністю та формою, залишаючи купи
+            лайків та кометарів я вже давно обрав твою душу, бо в ній — твоя
+            справжня краса."
+          </p>
+          <div class="secret__date">14.02.2026</div>
+          <button class="secret__button" onclick="app.hideSecretScreen()">
+            назад
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
