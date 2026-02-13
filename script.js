@@ -427,3 +427,68 @@ document.head.appendChild(style);
 document.addEventListener("DOMContentLoaded", () => {
   window.app = new ValentineApp();
 });
+
+// ========== МУЗИКА (автоматичний запуск) ==========
+document.addEventListener("DOMContentLoaded", function () {
+  const audio = document.getElementById("bgMusic");
+  const musicBtn = document.getElementById("musicToggle");
+
+  if (!audio || !musicBtn) return;
+
+  audio.volume = 0.3;
+  audio.loop = true;
+
+  let isPlaying = false;
+
+  // Функція запуску музики
+  function playMusic() {
+    if (isPlaying) return;
+
+    audio
+      .play()
+      .then(() => {
+        musicBtn.classList.add("playing");
+        musicBtn.querySelector(".music-icon").textContent = "🎶";
+        isPlaying = true;
+      })
+      .catch((e) => console.log("Автовідтворення заблоковано"));
+  }
+
+  // Функція зупинки музики
+  function pauseMusic() {
+    audio.pause();
+    musicBtn.classList.remove("playing");
+    musicBtn.querySelector(".music-icon").textContent = "🎵";
+    isPlaying = false;
+  }
+
+  // Клік по кнопці
+  musicBtn.addEventListener("click", () => {
+    if (isPlaying) {
+      pauseMusic();
+    } else {
+      playMusic();
+    }
+
+    if (window.navigator && window.navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+  });
+
+  // АВТОМАТИЧНИЙ ЗАПУСК (3 спроби)
+
+  // Спроба 1: Через 1 секунду
+  setTimeout(playMusic, 1000);
+
+  // Спроба 2: При першому дотику
+  document.addEventListener("touchstart", playMusic, { once: true });
+  document.addEventListener("click", playMusic, { once: true });
+
+  // Спроба 3: Після введення пароля
+  const checkInterval = setInterval(() => {
+    if (window.app && window.app.currentScreen === 2 && !isPlaying) {
+      playMusic();
+      clearInterval(checkInterval);
+    }
+  }, 500);
+});
