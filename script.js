@@ -356,14 +356,22 @@ class ValentineApp {
   setupOrientationListener() {
     window.addEventListener("orientationchange", () => {
       setTimeout(() => {
+        // Якщо ми на екрані входу - нічого не робимо
+        if (this.currentScreen === 1) {
+          return;
+        }
+
         if (Math.abs(window.orientation) === 90) {
+          // Ландшафтний режим
           if (this.orientationCount < 5 && this.currentScreen !== 5) {
             this.orientationCount++;
-            this.showScreen(5);
+            this.showScreen(5); // Показуємо секретний екран
             this.vibrate([15, 20, 30]);
           }
         } else {
+          // Портретний режим - повертаємось на той екран, звідки прийшли
           if (this.currentScreen === 5) {
+            // Якщо ми на секретному екрані - повертаємось на хроніки
             this.showScreen(2);
           }
         }
@@ -371,7 +379,9 @@ class ValentineApp {
     });
   }
 
+  // ===== СЕКРЕТНИЙ ЕКРАН =====
   hideSecretScreen() {
+    // Просто повертаємось на хроніки
     this.showScreen(2);
   }
 
@@ -391,6 +401,11 @@ class ValentineApp {
         this.bottomMenu.classList.remove("hidden");
       } else {
         this.bottomMenu.classList.add("hidden");
+      }
+
+      // Якщо повертаємось на екран 1 - скидаємо лічильник поворотів
+      if (screenNumber === 1) {
+        this.orientationCount = 0;
       }
 
       // Оновлюємо активний пункт меню
@@ -438,7 +453,8 @@ document.addEventListener("DOMContentLoaded", function () {
     "assets/song4.mp3",
   ];
 
-  let currentTrack = 0; // яка пісня зараз грає
+  let currentTrack = 0;
+  let isPlaying = false;
 
   const audio = document.getElementById("bgMusic");
   const musicBtn = document.getElementById("musicToggle");
@@ -449,135 +465,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Коли пісня закінчується - вмикаємо наступну
   audio.addEventListener("ended", () => {
-    currentTrack = (currentTrack + 1) % playlist.length; // перемикаємо на наступну
+    currentTrack = (currentTrack + 1) % playlist.length;
     audio.src = playlist[currentTrack];
-    audio.play().catch((e) => console.log("Не вдалося відтворити"));
-
-    // Показуємо сповіщення (опціонально)
+    if (isPlaying) {
+      audio.play().catch((e) => console.log("Не вдалося відтворити"));
+    }
     showTrackNotification(currentTrack);
   });
-
-  let isPlaying = false;
-
-  // Додаємо стилі для кнопки (якщо їх немає)
-  if (!document.querySelector("#musicStyles")) {
-    const styles = document.createElement("style");
-    styles.id = "musicStyles";
-    styles.textContent = `
-      .music-button {
-          position: fixed;
-          bottom: calc(100px + env(safe-area-inset-bottom));
-          right: 20px;
-          width: 60px;
-          height: 60px;
-          border-radius: 30px;
-          background: rgba(255, 255, 255, 0.9);
-          backdrop-filter: blur(10px);
-          border: 2px solid #c9a87c;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          cursor: pointer;
-          z-index: 1000;
-          box-shadow: 0 20px 40px rgba(44, 24, 16, 0.15);
-          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-          overflow: hidden;
-          color: #d66b7a;
-      }
-      
-      .music-button:active {
-          transform: scale(0.9);
-      }
-      
-      .music-button.playing {
-          background: #d66b7a;
-          color: white;
-          border-color: white;
-          width: 120px;
-      }
-      
-      .music-button.playing .music-icon {
-          animation: musicWave 1s infinite;
-      }
-      
-      .music-button.playing .music-text {
-          display: inline;
-          opacity: 1;
-      }
-      
-      .music-icon {
-          font-size: 24px;
-          transition: all 0.3s;
-      }
-      
-      .music-text {
-          font-size: 14px;
-          font-weight: 500;
-          display: none;
-          opacity: 0;
-          transition: all 0.3s;
-          white-space: nowrap;
-      }
-      
-      @keyframes musicWave {
-          0%, 100% { transform: scale(1) rotate(0deg); }
-          25% { transform: scale(1.1) rotate(-5deg); }
-          50% { transform: scale(1.2) rotate(0deg); }
-          75% { transform: scale(1.1) rotate(5deg); }
-      }
-      
-      .music-button.playing {
-          animation: pulseMusic 2s infinite;
-      }
-      
-      @keyframes pulseMusic {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(214, 107, 122, 0.4); }
-          50% { box-shadow: 0 0 0 10px rgba(214, 107, 122, 0); }
-      }
-      
-      /* Сповіщення про зміну пісні */
-      .track-notification {
-          position: fixed;
-          bottom: 180px;
-          right: 20px;
-          background: rgba(0, 0, 0, 0.8);
-          backdrop-filter: blur(10px);
-          color: white;
-          padding: 10px 20px;
-          border-radius: 30px;
-          font-size: 14px;
-          border: 1px solid #d66b7a;
-          transform: translateY(100px);
-          opacity: 0;
-          transition: all 0.3s;
-          z-index: 1001;
-          white-space: nowrap;
-      }
-      
-      .track-notification.show {
-          transform: translateY(0);
-          opacity: 1;
-      }
-      
-      @media (max-width: 380px) {
-          .music-button {
-              bottom: calc(90px + env(safe-area-inset-bottom));
-              right: 15px;
-              width: 50px;
-              height: 50px;
-          }
-          .music-button.playing { width: 110px; }
-          .music-icon { font-size: 20px; }
-          .track-notification {
-              bottom: 160px;
-              right: 15px;
-              font-size: 12px;
-          }
-      }
-    `;
-    document.head.appendChild(styles);
-  }
 
   // Створюємо сповіщення про зміну треку
   const notification = document.createElement("div");
@@ -601,7 +495,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function playMusic() {
     if (isPlaying) return;
 
-    // Встановлюємо першу пісню якщо ще не встановлена
     if (!audio.src || audio.src === "") {
       audio.src = playlist[0];
     }
@@ -612,7 +505,6 @@ document.addEventListener("DOMContentLoaded", function () {
         musicBtn.classList.add("playing");
         musicBtn.querySelector(".music-icon").textContent = "🎶";
         isPlaying = true;
-        console.log("Музика грає");
       })
       .catch((e) => console.log("Автовідтворення заблоковано"));
   }
@@ -625,7 +517,7 @@ document.addEventListener("DOMContentLoaded", function () {
     isPlaying = false;
   }
 
-  // Функція перемикання на наступну пісню (при подвійному кліку)
+  // Функція перемикання на наступну пісню
   function nextTrack() {
     currentTrack = (currentTrack + 1) % playlist.length;
     audio.src = playlist[currentTrack];
@@ -635,11 +527,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     showTrackNotification(currentTrack);
-    this.vibrate?.(15);
+    if (window.navigator && window.navigator.vibrate) {
+      navigator.vibrate(15);
+    }
   }
 
   // Клік по кнопці (ввімкнути/вимкнути)
-  musicBtn.addEventListener("click", () => {
+  musicBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
     if (isPlaying) {
       pauseMusic();
     } else {
@@ -654,6 +549,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Подвійний клік - наступна пісня
   musicBtn.addEventListener("dblclick", (e) => {
     e.preventDefault();
+    e.stopPropagation();
     nextTrack();
   });
 
@@ -663,8 +559,14 @@ document.addEventListener("DOMContentLoaded", function () {
   setTimeout(playMusic, 1000);
 
   // Спроба 2: При першому дотику
-  document.addEventListener("touchstart", playMusic, { once: true });
-  document.addEventListener("click", playMusic, { once: true });
+  const startOnTouch = () => {
+    playMusic();
+    document.removeEventListener("touchstart", startOnTouch);
+    document.removeEventListener("click", startOnTouch);
+  };
+
+  document.addEventListener("touchstart", startOnTouch, { once: true });
+  document.addEventListener("click", startOnTouch, { once: true });
 
   // Спроба 3: Після введення пароля
   const checkInterval = setInterval(() => {

@@ -82,7 +82,7 @@
             </div>
 
             <div class="entry__hint" id="hintMessage">
-              💭 Тицяемо, не лінуємося!
+              💭 Тицяємо, не лінуємося!
             </div>
           </div>
         </div>
@@ -96,7 +96,7 @@
           </button>
 
           <div class="chronology__counter">
-            <div class="chronology__main" id="mainCounter">0 роки, 0 днів</div>
+            <div class="chronology__main" id="mainCounter">0 років, 0 днів</div>
             <div class="chronology__detailed" id="detailedCounter">
               0 міс, 0 год, 0 хв, 0 с
             </div>
@@ -123,7 +123,7 @@
               <span class="chronology__emoji">🎉</span>
               <div class="chronology__info">
                 <div class="chronology__name">перший Новий рік</div>
-                <div class="chronology__value">31.12.2025</div>
+                <div class="chronology__value">31.12.2024</div>
               </div>
             </div>
           </div>
@@ -203,15 +203,22 @@
       </div>
     </div>
 
-    <audio id="bgMusic" loop>
-      <source src="assets/love-song.mp3" type="audio/mpeg" />
-    </audio>
+    <!-- Контейнер для музики (щоб кнопка завжди була зверху) -->
+    <div class="music-container">
+      <audio id="bgMusic" loop preload="auto">
+        <source src="assets/love-song.mp3" type="audio/mpeg" />
+      </audio>
 
-    <!-- Кнопка керування музикою -->
-    <button class="music-button" id="musicToggle">
-      <span class="music-icon">🎵</span>
-      <span class="music-text">музика</span>
-    </button>
+      <!-- Кнопка керування музикою -->
+      <button class="music-button" id="musicToggle">
+        <span class="music-icon">🎵</span>
+        <span class="music-text">музика</span>
+      </button>
+    </div>
+
+    <!-- Додатковий шар для кліків (щоб кнопка завжди ловила натискання) -->
+    <div class="click-layer"></div>
+
     <script src="script.js"></script>
   </body>
 </html>
