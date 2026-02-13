@@ -707,7 +707,7 @@ body {
 /* ========== МУЗИЧНИЙ ПЛЕЄР ========== */
 .music-button {
   position: fixed;
-  bottom: calc(750px + var(--sab));
+  top: 5px;
   right: 20px;
   width: 60px;
   height: 60px;

@@ -428,21 +428,183 @@ document.addEventListener("DOMContentLoaded", () => {
   window.app = new ValentineApp();
 });
 
-// ========== МУЗИКА (автоматичний запуск) ==========
+// ========== МУЗИКА З ПЛЕЙЛИСТОМ ==========
 document.addEventListener("DOMContentLoaded", function () {
+  // Масив з піснями (додай свої файли)
+  const playlist = [
+    "assets/song1.mp3",
+    "assets/song2.mp3",
+    "assets/song3.mp3",
+    "assets/song4.mp3",
+  ];
+
+  let currentTrack = 0; // яка пісня зараз грає
+
   const audio = document.getElementById("bgMusic");
   const musicBtn = document.getElementById("musicToggle");
 
   if (!audio || !musicBtn) return;
 
   audio.volume = 0.3;
-  audio.loop = true;
+
+  // Коли пісня закінчується - вмикаємо наступну
+  audio.addEventListener("ended", () => {
+    currentTrack = (currentTrack + 1) % playlist.length; // перемикаємо на наступну
+    audio.src = playlist[currentTrack];
+    audio.play().catch((e) => console.log("Не вдалося відтворити"));
+
+    // Показуємо сповіщення (опціонально)
+    showTrackNotification(currentTrack);
+  });
 
   let isPlaying = false;
+
+  // Додаємо стилі для кнопки (якщо їх немає)
+  if (!document.querySelector("#musicStyles")) {
+    const styles = document.createElement("style");
+    styles.id = "musicStyles";
+    styles.textContent = `
+      .music-button {
+          position: fixed;
+          bottom: calc(100px + env(safe-area-inset-bottom));
+          right: 20px;
+          width: 60px;
+          height: 60px;
+          border-radius: 30px;
+          background: rgba(255, 255, 255, 0.9);
+          backdrop-filter: blur(10px);
+          border: 2px solid #c9a87c;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          cursor: pointer;
+          z-index: 1000;
+          box-shadow: 0 20px 40px rgba(44, 24, 16, 0.15);
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          overflow: hidden;
+          color: #d66b7a;
+      }
+      
+      .music-button:active {
+          transform: scale(0.9);
+      }
+      
+      .music-button.playing {
+          background: #d66b7a;
+          color: white;
+          border-color: white;
+          width: 120px;
+      }
+      
+      .music-button.playing .music-icon {
+          animation: musicWave 1s infinite;
+      }
+      
+      .music-button.playing .music-text {
+          display: inline;
+          opacity: 1;
+      }
+      
+      .music-icon {
+          font-size: 24px;
+          transition: all 0.3s;
+      }
+      
+      .music-text {
+          font-size: 14px;
+          font-weight: 500;
+          display: none;
+          opacity: 0;
+          transition: all 0.3s;
+          white-space: nowrap;
+      }
+      
+      @keyframes musicWave {
+          0%, 100% { transform: scale(1) rotate(0deg); }
+          25% { transform: scale(1.1) rotate(-5deg); }
+          50% { transform: scale(1.2) rotate(0deg); }
+          75% { transform: scale(1.1) rotate(5deg); }
+      }
+      
+      .music-button.playing {
+          animation: pulseMusic 2s infinite;
+      }
+      
+      @keyframes pulseMusic {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(214, 107, 122, 0.4); }
+          50% { box-shadow: 0 0 0 10px rgba(214, 107, 122, 0); }
+      }
+      
+      /* Сповіщення про зміну пісні */
+      .track-notification {
+          position: fixed;
+          bottom: 180px;
+          right: 20px;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(10px);
+          color: white;
+          padding: 10px 20px;
+          border-radius: 30px;
+          font-size: 14px;
+          border: 1px solid #d66b7a;
+          transform: translateY(100px);
+          opacity: 0;
+          transition: all 0.3s;
+          z-index: 1001;
+          white-space: nowrap;
+      }
+      
+      .track-notification.show {
+          transform: translateY(0);
+          opacity: 1;
+      }
+      
+      @media (max-width: 380px) {
+          .music-button {
+              bottom: calc(90px + env(safe-area-inset-bottom));
+              right: 15px;
+              width: 50px;
+              height: 50px;
+          }
+          .music-button.playing { width: 110px; }
+          .music-icon { font-size: 20px; }
+          .track-notification {
+              bottom: 160px;
+              right: 15px;
+              font-size: 12px;
+          }
+      }
+    `;
+    document.head.appendChild(styles);
+  }
+
+  // Створюємо сповіщення про зміну треку
+  const notification = document.createElement("div");
+  notification.className = "track-notification";
+  notification.id = "trackNotification";
+  document.body.appendChild(notification);
+
+  // Функція показу сповіщення
+  function showTrackNotification(trackIndex) {
+    const notif = document.getElementById("trackNotification");
+    const trackNames = ["💕 Пісня 1", "✨ Пісня 2", "🎵 Пісня 3", "❤️ Пісня 4"];
+    notif.textContent = trackNames[trackIndex] || "🎵 Наступна пісня";
+    notif.classList.add("show");
+
+    setTimeout(() => {
+      notif.classList.remove("show");
+    }, 2000);
+  }
 
   // Функція запуску музики
   function playMusic() {
     if (isPlaying) return;
+
+    // Встановлюємо першу пісню якщо ще не встановлена
+    if (!audio.src || audio.src === "") {
+      audio.src = playlist[0];
+    }
 
     audio
       .play()
@@ -450,6 +612,7 @@ document.addEventListener("DOMContentLoaded", function () {
         musicBtn.classList.add("playing");
         musicBtn.querySelector(".music-icon").textContent = "🎶";
         isPlaying = true;
+        console.log("Музика грає");
       })
       .catch((e) => console.log("Автовідтворення заблоковано"));
   }
@@ -462,7 +625,20 @@ document.addEventListener("DOMContentLoaded", function () {
     isPlaying = false;
   }
 
-  // Клік по кнопці
+  // Функція перемикання на наступну пісню (при подвійному кліку)
+  function nextTrack() {
+    currentTrack = (currentTrack + 1) % playlist.length;
+    audio.src = playlist[currentTrack];
+
+    if (isPlaying) {
+      audio.play().catch((e) => console.log("Не вдалося відтворити"));
+    }
+
+    showTrackNotification(currentTrack);
+    this.vibrate?.(15);
+  }
+
+  // Клік по кнопці (ввімкнути/вимкнути)
   musicBtn.addEventListener("click", () => {
     if (isPlaying) {
       pauseMusic();
@@ -475,7 +651,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // АВТОМАТИЧНИЙ ЗАПУСК (3 спроби)
+  // Подвійний клік - наступна пісня
+  musicBtn.addEventListener("dblclick", (e) => {
+    e.preventDefault();
+    nextTrack();
+  });
+
+  // ===== АВТОМАТИЧНИЙ ЗАПУСК =====
 
   // Спроба 1: Через 1 секунду
   setTimeout(playMusic, 1000);
